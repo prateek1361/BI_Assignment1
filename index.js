@@ -38,7 +38,7 @@ app.get("/events", async (req, res) => {
     }
 });
 
-async function getEventsById() {
+async function getEventsById(eventId) {
     try {
         return await Event.findById(eventId);
     } catch (error) {
@@ -47,9 +47,9 @@ async function getEventsById() {
     }
 }
 
-app.get("/events", async (req, res) => {
+app.get("/events/:eventId", async (req, res) => {
     try {
-        const events = await getAllEvents(req.params.id);
+        const events = await getEventsById(req.params.eventId);
         res.json(events)
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch events." });
@@ -74,6 +74,29 @@ app.post("/events", async (req, res) => {
         res.status(500).json({error: "Failed to add event"})
     }
 })
+
+async function updateByTitle(eventTitle, dataToUpdate){
+  try{
+    const updatedevent = await Event.findOneAndUpdate({title: eventTitle}, dataToUpdate, {new: true})
+    return updatedevent
+  } catch(error){
+    console.log("Error in updating event rating.", error)
+  }
+}
+
+app.post("/events/title/:title", async (req, res) => {
+      try{
+        const updatedEvent = await updateByTitle(req.params.title, req.body)
+        if(updatedEvent){
+            res.status(200).json({message: "Event updated successfully.", updatedEvent: updatedEvent})
+        } else {
+            res.status(404).json({error: "Event not found."})
+        }
+    } catch(error){
+        res.status(500).json({error: "Failed to update event."})
+    }
+})
+
 
 const PORT = 3000
 app.listen(PORT, () => {
