@@ -17,7 +17,8 @@ const eventSchema = new mongoose.Schema({
   ],
   price: Number,
   location: String,
-  additionalInfo: String
+  additionalInfo: String,
+  hostedBy: String,
 });
 
 const Event = mongoose.model("Event", eventSchema);
